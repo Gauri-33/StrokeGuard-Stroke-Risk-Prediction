@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StrokeGuard AI — Clinical Risk Stratification</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .mesh-bg {
+      background-color: #0b1120;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(14, 165, 233, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(244, 63, 94, 0.08) 0px, transparent 50%);
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .gauge-circle {
+      transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+    input[type=range] {
+      accent-color: #0284c7;
+    }
+  </style>
+</head>
+<body class="mesh-bg text-slate-100 min-h-screen py-10 px-4 antialiased selection:bg-sky-500 selection:text-white">
+
+  <!-- Header Banner -->
+  <header class="max-w-4xl mx-auto text-center mb-8">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-400 text-xs font-semibold uppercase tracking-wider mb-3">
+      <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+      Supervised Ensemble Intelligence
+    </div>
+    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+      Stroke Risk Stratification
+    </h1>
+    <p class="text-slate-400 text-sm sm:text-base mt-2 max-w-xl mx-auto">
+      An educational model output based on demographic, metabolic, and cardiovascular attributes.
+    </p>
+  </header>
+
+  <main class="max-w-4xl mx-auto">
+    <!-- Mandatory Disclaimer -->
+    <div class="glass-card rounded-2xl p-4 mb-6 border-amber-500/30 bg-amber-950/20 flex items-start gap-3">
+      <svg class="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+      <div class="text-xs text-amber-200/90 leading-relaxed">
+        <strong class="font-semibold text-amber-300">Educational Instrument Only:</strong> This machine learning prediction reflects statistical pattern recognition on cohort data (~4.9% baseline prevalence) and should not be substituted for clinical diagnosis or physician judgment.
+      </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-2xl">
+      <form id="predictionForm" class="space-y-8">
+
+        <!-- Section: Demographics -->
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-sky-400 mb-4 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Demographic Factors
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <!-- Age with Slider & Number Display -->
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <div class="flex justify-between items-center mb-2">
+                <label class="text-xs font-medium text-slate-300">Age</label>
+                <span id="ageDisplay" class="text-sm font-bold text-sky-400">55 yrs</span>
+              </div>
+              <input type="range" id="age" min="1" max="100" value="55" class="w-full h-1.5 bg-slate-700 rounded-lg cursor-pointer">
+            </div>
+
+            <!-- Gender -->
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <label class="text-xs font-medium text-slate-300 block mb-2">Gender</label>
+              <select id="gender" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+
+            <!-- Ever Married -->
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <label class="text-xs font-medium text-slate-300 block mb-2">Ever Married</label>
+              <select id="ever_married" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Clinical Indicators -->
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-sky-400 mb-4 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            Cardiovascular & Metabolic Markers
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <!-- Hypertension -->
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <label class="text-xs font-medium text-slate-300 block mb-2">Hypertension History</label>
+              <select id="hypertension" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+                <option value="0">No (Normotensive)</option>
+                <option value="1">Yes (Diagnosed High BP)</option>
+              </select>
+            </div>
+
+            <!-- Heart Disease -->
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <label class="text-xs font-medium text-slate-300 block mb-2">Heart Disease History</label>
+              <select id="heart_disease" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+              </select>
+            </div>
+
+            <!-- Glucose Level -->
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <div class="flex justify-between items-center mb-2">
+                <label class="text-xs font-medium text-slate-300">Avg Glucose Level</label>
+                <span id="glucoseDisplay" class="text-sm font-bold text-sky-400">105.0 mg/dL</span>
+              </div>
+              <input type="range" id="avg_glucose_level" min="50" max="300" step="0.5" value="105.0" class="w-full h-1.5 bg-slate-700 rounded-lg cursor-pointer">
+              <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                <span>Normal (&lt;140)</span>
+                <span>Diabetic (&gt;200)</span>
+              </div>
+            </div>
+
+            <!-- BMI -->
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <div class="flex justify-between items-center mb-2">
+                <label class="text-xs font-medium text-slate-300">Body Mass Index (BMI)</label>
+                <span id="bmiDisplay" class="text-sm font-bold text-sky-400">28.4 kg/m²</span>
+              </div>
+              <input type="range" id="bmi" min="10" max="60" step="0.1" value="28.4" class="w-full h-1.5 bg-slate-700 rounded-lg cursor-pointer">
+              <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                <span>Healthy (18.5-24.9)</span>
+                <span>Obese (&ge;30)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Lifestyle & Environment -->
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-sky-400 mb-4 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Lifestyle & Environment
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <label class="text-xs font-medium text-slate-300 block mb-2">Work Domain</label>
+              <select id="work_type" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+                <option value="Private">Private Company</option>
+                <option value="Self-employed">Self-employed</option>
+                <option value="Govt_job">Government Job</option>
+                <option value="children">Children / Student</option>
+                <option value="Never_worked">Never Worked</option>
+              </select>
+            </div>
+
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <label class="text-xs font-medium text-slate-300 block mb-2">Residence Type</label>
+              <select id="Residence_type" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+                <option value="Urban">Urban</option>
+                <option value="Rural">Rural</option>
+              </select>
+            </div>
+
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+              <label class="text-xs font-medium text-slate-300 block mb-2">Smoking History</label>
+              <select id="smoking_status" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+                <option value="never smoked">Never Smoked</option>
+                <option value="formerly smoked">Formerly Smoked</option>
+                <option value="smokes">Current Smoker</option>
+                <option value="Unknown">Unknown</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="submitBtn" class="w-full py-4 px-6 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 font-bold rounded-2xl text-white shadow-lg shadow-sky-500/25 transition-all transform active:scale-[0.99] flex items-center justify-center gap-2">
+          <span>Evaluate Stroke Likelihood</span>
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </form>
+
+      <!-- Results Display Panel -->
+      <section id="results" class="hidden mt-10 pt-10 border-t border-slate-800/80 transition-all duration-700">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          
+          <!-- Radial Gauge Visualization -->
+          <div class="flex flex-col items-center justify-center p-6 bg-slate-900/80 rounded-2xl border border-slate-800">
+            <div class="relative w-48 h-48 flex items-center justify-center">
+              <svg class="w-full h-full" viewBox="0 0 100 100">
+                <!-- Background circle -->
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#1e293b" stroke-width="8"></circle>
+                <!-- Animated score progress ring -->
+                <circle id="gaugeProgress" class="gauge-circle" cx="50" cy="50" r="42" fill="none" stroke="#0ea5e9" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="264" stroke-linecap="round"></circle>
+              </svg>
+              <div class="absolute flex flex-col items-center justify-center">
+                <span id="scoreVal" class="text-4xl font-extrabold tracking-tight text-white">0</span>
+                <span class="text-[11px] font-semibold tracking-wider uppercase text-slate-400 mt-0.5">out of 100</span>
+              </div>
+            </div>
+            <p class="text-xs text-slate-400 mt-3 font-medium">Model Probability</p>
+          </div>
+
+          <!-- Clinical Interpretation Card -->
+          <div class="space-y-4">
+            <div>
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Model Threshold Comparison</span>
+              <div id="riskBadge" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-sm font-bold"></div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2 text-xs text-slate-300">
+              <div class="flex justify-between">
+                <span class="text-slate-400">Model probability:</span>
+                <span id="rawProbVal" class="font-semibold text-white">0%</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Cohort Base Rate:</span>
+                <span class="font-semibold text-white">~4.87%</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Classification Threshold:</span>
+                <span class="font-semibold text-white">>{{ (threshold * 100)|round(1) }}%</span>
+              </div>
+            </div>
+
+            <p id="interpretiveText" class="text-xs text-slate-400 leading-relaxed"></p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // Two-way sync for range sliders
+    const setupSlider = (sliderId, displayId, suffix) => {
+      const slider = document.getElementById(sliderId);
+      const display = document.getElementById(displayId);
+      slider.addEventListener('input', () => {
+        display.innerText = `${slider.value} ${suffix}`;
+      });
+    };
+    setupSlider('age', 'ageDisplay', 'yrs');
+    setupSlider('avg_glucose_level', 'glucoseDisplay', 'mg/dL');
+    setupSlider('bmi', 'bmiDisplay', 'kg/m²');
+
+    // Form submission & scoring
+    document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        gender: document.getElementById('gender').value,
+        age: parseFloat(document.getElementById('age').value),
+        hypertension: parseInt(document.getElementById('hypertension').value),
+        heart_disease: parseInt(document.getElementById('heart_disease').value),
+        ever_married: document.getElementById('ever_married').value,
+        work_type: document.getElementById('work_type').value,
+        Residence_type: document.getElementById('Residence_type').value,
+        smoking_status: document.getElementById('smoking_status').value,
+        avg_glucose_level: parseFloat(document.getElementById('avg_glucose_level').value),
+        bmi: parseFloat(document.getElementById('bmi').value)
+      };
+
+      try {
+        const res = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({ detail: res.statusText }));
+          alert("Prediction error: " + (errData.detail || res.statusText));
+          return;
+        }
+
+        const data = await res.json();
+        const resultsDiv = document.getElementById('results');
+        const scoreVal = document.getElementById('scoreVal');
+        const gaugeProgress = document.getElementById('gaugeProgress');
+        const riskBadge = document.getElementById('riskBadge');
+        const rawProbVal = document.getElementById('rawProbVal');
+        const interpretiveText = document.getElementById('interpretiveText');
+
+        resultsDiv.classList.remove('hidden');
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        // Score interpolation counter
+        let start = 0;
+        const target = Math.min(Math.max(data.raw_probability, 0), 100);
+        const duration = 800;
+        const stepTime = 15;
+        const steps = duration / stepTime;
+        const increment = target / steps;
+        const timer = setInterval(() => {
+          start += increment;
+          if (start >= target) {
+            scoreVal.innerText = target.toFixed(1);
+            clearInterval(timer);
+          } else {
+            scoreVal.innerText = start.toFixed(1);
+          }
+        }, stepTime);
+
+        // SVG circumference = 2 * PI * 42 ≈ 263.89
+        const circumference = 264;
+        const offset = circumference - (target / 100) * circumference;
+        gaugeProgress.style.strokeDashoffset = offset;
+
+        rawProbVal.innerText = `${data.raw_probability}%`;
+
+        if (data.is_high_risk) {
+          gaugeProgress.style.stroke = '#f43f5e'; // Rose
+          riskBadge.className = 'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-sm font-bold bg-rose-500/10 border border-rose-500/30 text-rose-400';
+          riskBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-400"></span> At or Above Model Threshold';
+          interpretiveText.innerText = 'The model output is at or above the threshold selected during training. This is not a diagnosis or a clinically validated estimate of individual risk.';
+        } else {
+          gaugeProgress.style.stroke = '#10b981'; // Emerald
+          riskBadge.className = 'inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-sm font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400';
+          riskBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Below Model Threshold';
+          interpretiveText.innerText = 'The model output is below the threshold selected during training. This does not rule out medical risk and must not be used to make health decisions.';
+        }
+      } catch (err) {
+        alert("Request error: " + err);
+      }
+    });
+  </script>
+</body>
+</html>
