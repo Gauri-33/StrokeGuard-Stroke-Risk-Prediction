@@ -148,11 +148,14 @@ if page == "Risk assessment":
                 st.markdown(f"<div class='metric-card'><div class='metric-label'>THRESHOLD USED</div><div class='metric-value'>{threshold:.3f}</div><div class='metric-note'>Selected during model tuning</div></div>", unsafe_allow_html=True)
             with x3:
                 color = "#b45309" if high else "#087f8c"
-                status = "Above threshold" if high else "Below threshold"
+                if probability >= threshold:
+                    classifier_output = "Stroke Predicted"
+                else:
+                    classifier_output = "Stroke Not Predicted"
                 st.markdown(f"<div class='metric-card'><div class='metric-label'>CLASSIFIER OUTPUT</div><div class='metric-value' style='font-size:1.35rem;color:{color}'>{status}</div><div class='metric-note'>Not a medical risk category</div></div>", unsafe_allow_html=True)
             st.progress(min(max(probability, 0.0), 1.0), text="Predicted probability (0–100%)")
             if high:
-                st.warning("The model score is at or above its selected classification threshold. This does not mean a person has, or will have, a stroke.")
+                st.info("This is a machine-learning prediction for educational purposes, ""not a medical diagnosis or a guarantee of a future stroke.")
             else:
                 st.info("The model score is below its selected classification threshold. A below-threshold result does not rule out medical risk.")
             with st.expander("View the input record sent to the model"):
