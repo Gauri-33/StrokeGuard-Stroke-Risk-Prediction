@@ -188,10 +188,77 @@ elif page == "Model analytics":
             "Test ROC-AUC": st.column_config.NumberColumn(format="%.3f"),
             "Test Accuracy": st.column_config.NumberColumn(format="%.3f"),
         })
-        if "Model" in display and "Test PR-AUC" in display:
-            chart_data = display.set_index("Model")[[c for c in ["Test PR-AUC", "Test Recall", "Test Precision", "Test F1"] if c in display]].dropna(how="all")
-            st.markdown("#### Metric comparison")
-            st.bar_chart(chart_data, use_container_width=True)
+        if "Model" in display:
+            st.markdown("#### Model performance graphs")
+            metric_groups = [
+                ("Test Accuracy", "Test Precision", "Test Recall", "Test F1"),
+                ("Test PR-AUC", "Test ROC-AUC"),
+            ]
+            for metrics in metric_groups:
+                available = [metric for metric in metrics if metric in display.columns]
+                if available:
+                    chart_data = display.set_index("Model")[available].apply(pd.to_numeric, errors="coerce").dropna(how="all")
+                    if not chart_data.empty:
+                        st.bar_chart(chart_data, use_container_width=True)
+            if "Test PR-AUC" in display.columns:
+                pr_data = display[["Model", "Test PR-AUC"]].copy()
+                pr_data["Test PR-AUC"] = pd.to_numeric(pr_data["Test PR-AUC"], errors="coerce")
+                pr_data = pr_data.dropna().sort_values("Test PR-AUC", ascending=True)
+                if not pr_data.empty:
+                    fig, ax = plt.subplots(figsize=(9, max(3.5, 0.55 * len(pr_data))))
+                    fig.patch.set_alpha(0)
+                    ax.set_facecolor("white")
+                    ax.barh(pr_data["Model"], pr_data["Test PR-AUC"], color="#0b9298")
+                    ax.set_xlim(0, max(1.0, float(pr_data["Test PR-AUC"].max()) * 1.12))
+                    ax.set_xlabel("Test PR-AUC")
+                    ax.set_title("Precision–Recall AUC by model")
+                    ax.grid(axis="x", alpha=0.2)
+                    plt.tight_layout()
+                    st.pyplot(fig, use_container_width=True)
+                    plt.close(fig)
+
+        st.markdown("#### Decision Tree visualization")
+        st.caption("The tree diagram is shown when the loaded winning pipeline contains a fitted Decision Tree. Only the first three levels are displayed for readability.")
+        tree_model = None
+        pipeline_steps = getattr(pipeline, "named_steps", {})
+        for step_name, step_model in pipeline_steps.items():
+            if hasattr(step_model, "tree_"):
+                tree_model = step_model
+                break
+        if tree_model is None and hasattr(pipeline, "tree_"):
+            tree_model = pipeline
+
+        if tree_model is not None:
+            tree_feature_names = None
+            try:
+                if hasattr(pipeline, "steps") and len(pipeline.steps) > 1:
+                    tree_feature_names = pipeline[:-1].get_feature_names_out()
+            except Exception:
+                tree_feature_names = None
+            try:
+                from sklearn.tree import plot_tree
+                fig, ax = plt.subplots(figsize=(20, 9))
+                fig.patch.set_facecolor("white")
+                plot_tree(
+                    tree_model,
+                    feature_names=list(tree_feature_names) if tree_feature_names is not None and len(tree_feature_names) == tree_model.n_features_in_ else None,
+                    class_names=["No stroke", "Stroke"],
+                    filled=True,
+                    rounded=True,
+                    max_depth=3,
+                    fontsize=7,
+                    ax=ax,
+                )
+                ax.set_title("Fitted Decision Tree (top 3 levels)", pad=16)
+                plt.tight_layout()
+                st.pyplot(fig, use_container_width=True)
+                plt.close(fig)
+                st.caption("Node colors and split rules describe the fitted model, not causal relationships or clinical guidance.")
+            except Exception as exc:
+                st.warning(f"Could not render the Decision Tree diagram: {exc}")
+        else:
+            st.info("The loaded winning model is not a standalone Decision Tree, so its tree structure cannot be drawn from this artifact. The Decision Tree's metrics are still included in the comparison graphs above.")
+
         st.caption("PR-AUC is especially useful when positive cases are rare. Metrics are specific to this dataset split and are not evidence of clinical validity.")
     if feature_importances:
         st.markdown("#### Global feature importance")
