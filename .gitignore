@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+.venv/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# Kaggle Dataset (Do not redistribute per terms)
+data/*.csv
+data/*.zip
+
+# Keep the trained artifact and evaluation outputs available for deployment/review.
+# Raw dataset files remain excluded above.
+reports/*.pdf
